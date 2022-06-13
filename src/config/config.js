@@ -1,9 +1,10 @@
+require("dotenv").config();
 module.exports = {
   development: {
-    username: "talit",
-    password: "talit01314",
-    database: "api_veiculos",
-    host: "127.0.0.1",
-    dialect: "mysql",
+    username: process.env.DATABASE_USER,
+    password: process.env.DATABASE_PASS,
+    database: process.env.DATABASE_NAME,
+    host: process.env.DATABASE_HOST,
+    dialect: process.env.DATABASE_DRIVER,
   },
 };

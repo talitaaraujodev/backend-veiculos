@@ -1,4 +1,4 @@
-import { ResponseError } from "../errors/ResponseError";
+﻿import { ResponseError } from "../errors/ResponseError";
 import { Const } from "../util/const";
 import validate from "../validators/validate";
 import veiculoValidator from "../validators/vaiculoValidator";
@@ -20,12 +20,19 @@ class VeiculoService {
     return veiculoCreated;
   }
 
-  async findAll(): Promise<Veiculo[]> {
+  async findListing(
+    marca?: string,
+    ano?: number,
+    vendido?: boolean
+  ): Promise<Veiculo[]> {
+    if (marca) {
+      return await this.veiculoRepository.findByMarca(marca);
+    } else if (ano) {
+      return await this.veiculoRepository.findByAno(ano);
+    } else if (vendido) {
+      return await this.veiculoRepository.findByNotVendido(vendido);
+    }
     return await this.veiculoRepository.findAll();
-  }
-
-  async findAllManufacturer(): Promise<any> {
-    return await this.veiculoRepository.findAllManufacturer();
   }
 
   async findOne(id: number): Promise<Veiculo> {
@@ -39,22 +46,9 @@ class VeiculoService {
     return veiculo;
   }
 
-  async findByUnsold(): Promise<Veiculo[]> {
-    return await this.veiculoRepository.findByUnsold();
-  }
-
-  async findByManufacturer(marca: string): Promise<Veiculo[]> {
-    console.log("marca aqui", marca);
-    return await this.veiculoRepository.findByManufacturer(marca);
-  }
-
-  async findByDecade(ano: number): Promise<Veiculo[]> {
-    return this.veiculoRepository.findByDecade(ano);
-  }
-
-  async findByLastVeiculos(): Promise<Veiculo[]> {
-    const teste = this.veiculoRepository.findByLastVeiculos();
-    console.log(teste);
+  async findByUltimosVeiculos(): Promise<Veiculo[]> {
+    const teste = await this.veiculoRepository.findByUltimosVeiculos();
+    console.log("registros");
     return teste;
   }
 
@@ -62,7 +56,6 @@ class VeiculoService {
     const veiculoExists = await this.veiculoRepository.findOne(id);
     const body = veiculo;
     const data = await validate(veiculoValidator, body);
-    console.log("data", data);
     if (data.errors) {
       throw new ResponseError(data.errors, Const.httpStatus.BAD_REQUEST);
     } else if (!veiculoExists) {
@@ -71,7 +64,7 @@ class VeiculoService {
         Const.httpStatus.BAD_REQUEST
       );
     }
-    return await this.veiculoRepository.update(id, data);
+    return await this.veiculoRepository.update(id, veiculo);
   }
 
   async delete(id: number): Promise<Veiculo> {

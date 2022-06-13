@@ -15,23 +15,14 @@ class VeiculoController {
     }
   }
 
-  async findAll(req: Request, res: Response): Promise<Response> {
-    const getVeiculos = await veiculoService.findAll();
+  async findListing(req: Request, res: Response): Promise<Response> {
+    const { marca, ano, vendido }: any = req.query;
+
+    const getVeiculos = await veiculoService.findListing(marca, ano, vendido);
     try {
       return res.status(Const.httpStatus.OK).json(getVeiculos);
     } catch (error: any) {
       return res.status(500).json(error);
-    }
-  }
-
-  async findAllManufacturer(req: Request, res: Response): Promise<Response> {
-    const getManufacturers = await veiculoService.findAllManufacturer();
-    try {
-      return res.status(Const.httpStatus.OK).json(getManufacturers);
-    } catch (error: any) {
-      return res
-        .status(error.status || Const.httpStatus.ERROR_SERVER)
-        .json(error);
     }
   }
 
@@ -47,46 +38,8 @@ class VeiculoController {
     }
   }
 
-  async findByUnsold(req: Request, res: Response): Promise<Response> {
-    const veiculosUnsold = await veiculoService.findByUnsold();
-    try {
-      return res.status(Const.httpStatus.OK).json(veiculosUnsold);
-    } catch (error: any) {
-      return res
-        .status(error.status || Const.httpStatus.ERROR_SERVER)
-        .json(error);
-    }
-  }
-
-  async findByManufacturer(req: Request, res: Response): Promise<Response> {
-    try {
-      const { marca } = req.params;
-      console.log("marca aqui", marca);
-      const veiculosByManufacturer = await veiculoService.findByManufacturer(
-        marca
-      );
-      return res.status(Const.httpStatus.OK).json(veiculosByManufacturer);
-    } catch (error: any) {
-      return res
-        .status(error.status || Const.httpStatus.ERROR_SERVER)
-        .json(error);
-    }
-  }
-
-  async findByDecade(req: Request, res: Response): Promise<Response> {
-    try {
-      const ano = parseInt(req.params.ano);
-      const veiculosByDecade = await veiculoService.findByDecade(ano);
-      return res.status(Const.httpStatus.OK).json(veiculosByDecade);
-    } catch (error: any) {
-      return res
-        .status(error.status || Const.httpStatus.ERROR_SERVER)
-        .json(error);
-    }
-  }
-
-  async findByLastVeiculos(req: Request, res: Response): Promise<Response> {
-    const getLastVeiculos = await veiculoService.findByLastVeiculos();
+  async findByUltimosVeiculos(req: Request, res: Response): Promise<Response> {
+    const getLastVeiculos = await veiculoService.findByUltimosVeiculos();
     try {
       return res.status(Const.httpStatus.OK).json(getLastVeiculos);
     } catch (error: any) {
@@ -100,10 +53,9 @@ class VeiculoController {
   async update(req: Request, res: Response): Promise<Response> {
     try {
       const id = parseInt(req.params.id);
-      const veiculo = await veiculoService.update(id, req.body);
+      await veiculoService.update(id, req.body);
       return res.json({
         message: "Veiculo atualizado com sucesso",
-        veiculo,
       });
     } catch (error: any) {
       console.log(error);
@@ -115,8 +67,8 @@ class VeiculoController {
 
   async delete(req: Request, res: Response): Promise<Response> {
     try {
-      const id = parseInt(req.params.id);
-      await veiculoService.delete(id);
+      const { id } = req.params;
+      await veiculoService.delete(parseInt(id));
       return res.status(Const.httpStatus.OK).json({
         message: "Veiculo deletado com sucesso.",
       });

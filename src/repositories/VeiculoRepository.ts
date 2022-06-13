@@ -2,7 +2,7 @@ import { VeiculoDTO } from "../dto/VeiculoDto";
 import { Veiculo } from "../entities/VeiculoEntity";
 import { IVeiculoRepository } from "./IVeiculoRepository";
 import database from "../database/models/index";
-
+import { Op } from "sequelize";
 class VeiculoRepository implements IVeiculoRepository {
   async create(veiculo: VeiculoDTO): Promise<Veiculo> {
     return await database.Veiculos.create(veiculo);
@@ -12,38 +12,33 @@ class VeiculoRepository implements IVeiculoRepository {
     return await database.Veiculos.findAll();
   }
 
-  async findAllManufacturer(): Promise<any> {
-    return await database.Veiculo.findAll({
-      select: {
-        marca: true,
-      },
-    });
-  }
-
   async findOne(id: number): Promise<Veiculo | any> {
-    return await database.Veiculo.findOne({ where: { id } });
+    return await database.Veiculos.findOne({ where: { id } });
   }
 
-  async findByUnsold(): Promise<Veiculo[]> {
-    const veiculos = database.Veiculo.findMany({ where: { vendido: false } });
-    return veiculos;
+  async findByNotVendido(vendido: boolean): Promise<Veiculo[]> {
+    return await database.Veiculos.findAll({ where: { vendido } });
   }
 
-  async findByManufacturer(marca: string): Promise<Veiculo[]> {
-    const veiculos = await database.veiculo.findMany({
-      where: { OR: [{ marca }] },
+  async findByMarca(marca: string): Promise<Veiculo[]> {
+    return await database.Veiculos.findAll({
+      where: { marca },
     });
-    return veiculos;
   }
 
-  async findByDecade(ano: number): Promise<Veiculo[]> {
-    return await database.Veiculo.findMany({ where: { ano } });
+  async findByAno(ano: number): Promise<Veiculo[]> {
+    return await database.Veiculos.findAll({ where: { ano } });
   }
 
-  async findByLastVeiculos(): Promise<Veiculo[]> {
-    return await database.Veiculo.findMany({
-      take: 10,
-      orderBy: { createdAt: "desc" },
+  async findByUltimosVeiculos(): Promise<Veiculo[]> {
+    return await database.Veiculos.findAll({
+      where: {
+        createdAt: {
+          [Op.lt]: new Date(),
+          [Op.gt]: new Date(new Date() - 24 * 60 * 60 * 1000),
+        },
+        id: 10,
+      },
     });
   }
 
