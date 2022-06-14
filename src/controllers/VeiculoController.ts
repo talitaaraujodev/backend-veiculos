@@ -39,6 +39,7 @@ class VeiculoController {
   }
 
   async findByUltimosVeiculos(req: Request, res: Response): Promise<Response> {
+    console.log(req);
     const getLastVeiculos = await veiculoService.findByUltimosVeiculos();
     try {
       return res.status(Const.httpStatus.OK).json(getLastVeiculos);

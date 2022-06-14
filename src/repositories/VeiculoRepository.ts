@@ -35,9 +35,8 @@ class VeiculoRepository implements IVeiculoRepository {
       where: {
         createdAt: {
           [Op.lt]: new Date(),
-          [Op.gt]: new Date(new Date() - 24 * 60 * 60 * 1000),
+          [Op.gt]: new Date(new Date().getTime() - 604800000),
         },
-        id: 10,
       },
     });
   }

@@ -47,9 +47,7 @@ class VeiculoService {
   }
 
   async findByUltimosVeiculos(): Promise<Veiculo[]> {
-    const teste = await this.veiculoRepository.findByUltimosVeiculos();
-    console.log("registros");
-    return teste;
+    return await this.veiculoRepository.findByUltimosVeiculos();
   }
 
   async update(id: number, veiculo: VeiculoDTO): Promise<Veiculo> {
